@@ -147,3 +147,6 @@ $RECYCLE.BIN/
 .directory
 .Trash-*
 .nfs*
+
+project_idea.md
+package-lock.json
