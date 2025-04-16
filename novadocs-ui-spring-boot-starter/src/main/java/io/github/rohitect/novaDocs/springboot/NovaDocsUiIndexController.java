@@ -1,4 +1,4 @@
-package io.github.rohitect.springboot.autoconfigure;
+package io.github.rohitect.novaDocs.springboot;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ClassPathResource;

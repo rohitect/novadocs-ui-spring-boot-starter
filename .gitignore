@@ -97,6 +97,7 @@ lerna-debug.log*
 # Maven specific
 .mvn/timing.properties
 .mvn/wrapper/maven-wrapper.jar
+maven-deploy.properties
 
 # Gradle specific
 .gradle/

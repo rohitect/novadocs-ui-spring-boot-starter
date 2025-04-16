@@ -1,2 +1,2 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-io.github.rohitect.springboot.autoconfigure.NovaDocsUiAutoConfiguration
+io.github.rohitect.novaDocs.springboot.NovaDocsUiAutoConfiguration
