@@ -48,7 +48,7 @@ Add the following dependency to your Spring Boot application's `pom.xml`:
 
 ```xml
 <dependency>
-    <groupId>com.novaDocs</groupId>
+    <groupId>io.github.rohitect</groupId>
     <artifactId>novadocs-ui-spring-boot-starter</artifactId>
     <version>0.1.0-SNAPSHOT</version>
 </dependency>
@@ -141,7 +141,7 @@ Here's a complete example of how to set up a Spring Boot REST API with NovaDocs 
 
         <!-- NovaDocs UI -->
         <dependency>
-            <groupId>com.novaDocs</groupId>
+            <groupId>io.github.rohitect</groupId>
             <artifactId>novadocs-ui-spring-boot-starter</artifactId>
             <version>0.1.0-SNAPSHOT</version>
         </dependency>

@@ -1,4 +1,4 @@
-package com.novaDocs.springboot.autoconfigure;
+package io.github.rohitect.springboot.autoconfigure;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

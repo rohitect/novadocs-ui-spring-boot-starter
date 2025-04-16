@@ -1,1 +1,1 @@
-com.novaDocs.springboot.autoconfigure.NovaDocsUiAutoConfiguration
+io.github.rohitect.springboot.autoconfigure.NovaDocsUiAutoConfiguration

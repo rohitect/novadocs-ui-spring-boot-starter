@@ -1,4 +1,4 @@
-package com.novaDocs.springboot.autoconfigure;
+package io.github.rohitect.springboot.autoconfigure;
 
 /**
  * This controller has been removed to avoid ambiguous mapping with NovaDocsUiIndexController.

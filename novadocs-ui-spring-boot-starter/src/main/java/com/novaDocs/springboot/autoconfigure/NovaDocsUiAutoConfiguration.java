@@ -1,4 +1,4 @@
-package com.novaDocs.springboot.autoconfigure;
+package io.github.rohitect.springboot.autoconfigure;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
