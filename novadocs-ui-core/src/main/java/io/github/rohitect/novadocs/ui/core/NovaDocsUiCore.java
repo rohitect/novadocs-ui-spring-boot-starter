@@ -1,4 +1,4 @@
-package io.github.rohitect.novadocs.core;
+package io.github.rohitect.novadocs.ui.core;
 
 /**
  * Main entry point for the NovaDocs UI Core functionality.
