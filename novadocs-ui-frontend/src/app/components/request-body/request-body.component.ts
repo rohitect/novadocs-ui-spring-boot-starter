@@ -1,6 +1,7 @@
-import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges } from '@angular/core';
+import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, Injector } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { TryItOutComponent } from '../try-it-out-new/try-it-out.component';
 
 @Component({
   selector: 'app-request-body',
@@ -19,7 +20,15 @@ export class RequestBodyComponent implements OnChanges {
   schema: any = null;
   validationError: string | null = null;
 
-  constructor() {}
+  constructor(private injector: Injector) {}
+
+  /**
+   * Find the parent TryItOutComponent to access the apiDocs
+   */
+  private findParentComponent(): TryItOutComponent | null {
+    // Try to find the parent component in the injector tree
+    return this.injector.get(TryItOutComponent, null);
+  }
 
   ngOnChanges(changes: SimpleChanges): void {
     if (changes['requestBody'] && this.requestBody) {
@@ -123,8 +132,31 @@ export class RequestBodyComponent implements OnChanges {
 
     // Handle references
     if (schema.$ref) {
-      // This is a simplified approach - in a real app, you'd resolve the reference
+      // Extract the reference name from the $ref string
+      const refParts = schema.$ref.split('/');
+      const refName = refParts.pop();
+
+      // Try to find the referenced schema in the parent component
+      const parentComponent = this.findParentComponent();
+      if (parentComponent?.apiDocs?.components?.schemas?.[refName]) {
+        const refSchema = parentComponent.apiDocs.components.schemas[refName];
+
+        // Check if the schema has an example
+        if (refSchema.example) {
+          return refSchema.example;
+        }
+
+        // Otherwise, generate a sample from the schema
+        return this.generateSampleFromSchema(refSchema);
+      }
+
+      // If we can't resolve, return a placeholder
       return { "reference": schema.$ref };
+    }
+
+    // Check if the schema has an example
+    if (schema.example) {
+      return schema.example;
     }
 
     // Handle different types

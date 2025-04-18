@@ -1,7 +1,6 @@
 import { Component, Input, Output, EventEmitter, OnChanges, SimpleChanges, ChangeDetectionStrategy, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { BehaviorSubject } from 'rxjs';
 
 import { ParameterInputComponent } from '../parameter-input/parameter-input.component';
 import { RequestBodyComponent } from '../request-body/request-body.component';
@@ -60,12 +59,38 @@ export class TryItOutComponent implements OnChanges {
     if ((changes['operation'] || changes['apiDocs']) && this.operation) {
       this.initializeParameters();
       this.initializeSecurity();
+      this.initializeRequestBody();
       this.updateState({ isExpanded: this.autoExpand });
     }
 
     // Handle autoExpand changes
     if (changes['autoExpand'] && !changes['autoExpand'].firstChange) {
       this.updateState({ isExpanded: this.autoExpand });
+    }
+  }
+
+  /**
+   * Initialize request body with sample data for POST, PUT, DELETE methods
+   */
+  private initializeRequestBody(): void {
+    // Only generate sample for POST, PUT, DELETE methods
+    const methodsWithBody = ['POST', 'PUT', 'DELETE', 'PATCH'];
+
+    if (methodsWithBody.includes(this.method.toUpperCase()) && this.hasRequestBody) {
+      // Check if the request body has application/json content type
+      const requestBody = this.operation.requestBody;
+      if (requestBody?.content?.['application/json']?.schema) {
+        // Generate sample JSON from schema
+        const schema = requestBody.content['application/json'].schema;
+        const sample = this.generateSampleFromSchema(schema);
+
+        // Set the request body content
+        this.requestBody = {
+          contentType: 'application/json',
+          content: JSON.stringify(sample, null, 2),
+          isValid: true
+        };
+      }
     }
   }
 
@@ -283,7 +308,7 @@ export class TryItOutComponent implements OnChanges {
     this.cdr.markForCheck();
 
     // Check if we're using sample data
-    const isUsingSampleData = this.apiDocs?.servers?.[0]?.url === '/api';
+    const isUsingSampleData = !this.apiDocs || !this.apiDocs.servers || this.apiDocs?.servers?.[0]?.url === '/api';
 
     try {
       // Build the URL with path parameters
@@ -316,9 +341,12 @@ export class TryItOutComponent implements OnChanges {
       // Ensure URL is absolute
       if (!url.startsWith('http')) {
         // Get the server URL from the OpenAPI spec
-        const serverUrl = this.apiDocs.servers && this.apiDocs.servers.length > 0
-          ? this.apiDocs.servers[0].url
-          : '';
+        let serverUrl = '';
+
+        // Check if apiDocs and servers exist
+        if (this.apiDocs && this.apiDocs.servers && this.apiDocs.servers.length > 0) {
+          serverUrl = this.apiDocs.servers[0].url;
+        }
 
         if (serverUrl) {
           // Remove trailing slash from server URL and leading slash from path
@@ -509,6 +537,85 @@ export class TryItOutComponent implements OnChanges {
         .catch(err => {
           console.error('Failed to copy cURL command:', err);
         });
+    }
+  }
+
+  /**
+   * Generate a sample object from a JSON schema
+   */
+  private generateSampleFromSchema(schema: any): any {
+    if (!schema) return null;
+
+    // Handle references
+    if (schema.$ref) {
+      // Extract the reference name and try to resolve it
+      const refParts = schema.$ref.split('/');
+      const refName = refParts.pop();
+
+      // Try to resolve from components/schemas
+      if (this.apiDocs?.components?.schemas?.[refName]) {
+        const refSchema = this.apiDocs.components.schemas[refName];
+
+        // Check if the schema has an example
+        if (refSchema.example) {
+          return refSchema.example;
+        }
+
+        // Otherwise, generate a sample from the schema
+        return this.generateSampleFromSchema(refSchema);
+      }
+
+      // If we can't resolve, return a placeholder
+      return { "reference": schema.$ref };
+    }
+
+    // Check if the schema has an example
+    if (schema.example) {
+      return schema.example;
+    }
+
+    // Handle different types
+    switch (schema.type) {
+      case 'object':
+        const obj: any = {};
+        if (schema.properties) {
+          Object.keys(schema.properties).forEach(propName => {
+            obj[propName] = this.generateSampleFromSchema(schema.properties[propName]);
+          });
+        }
+        return obj;
+
+      case 'array':
+        if (schema.items) {
+          return [this.generateSampleFromSchema(schema.items)];
+        }
+        return [];
+
+      case 'string':
+        if (schema.enum && schema.enum.length > 0) {
+          return schema.enum[0];
+        }
+        if (schema.example) return schema.example;
+        if (schema.format === 'date-time') return new Date().toISOString();
+        if (schema.format === 'date') return new Date().toISOString().split('T')[0];
+        if (schema.format === 'email') return 'user@example.com';
+        if (schema.format === 'uuid') return '00000000-0000-0000-0000-000000000000';
+        return 'string';
+
+      case 'number':
+      case 'integer':
+        if (schema.enum && schema.enum.length > 0) {
+          return schema.enum[0];
+        }
+        if (schema.example !== undefined) return schema.example;
+        return 0;
+
+      case 'boolean':
+        if (schema.example !== undefined) return schema.example;
+        return false;
+
+      default:
+        return null;
     }
   }
 

@@ -576,7 +576,7 @@ export class ApiDocsComponent implements OnInit {
         path,
         pathItem,
         methods,
-        isExpanded: false // Initially collapsed
+        isExpanded: true // Keep endpoints expanded by default
       };
     });
   }
