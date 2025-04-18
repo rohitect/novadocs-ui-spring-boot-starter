@@ -1,0 +1,217 @@
+<div>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <a class="logo" routerLink="/">
+        <span>NovaDoc UI</span>
+      </a>
+      <nav>
+        <a routerLink="/api-docs">API Playground</a>
+        <a href="#">Kafka</a>
+      </nav>
+      <div class="right-side">
+        <button class="btn btn-icon theme-toggle" (click)="toggleTheme()" aria-label="Toggle theme" title="{{ isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme' }}">
+          <svg *ngIf="isDarkTheme" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+          <svg *ngIf="!isDarkTheme" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+          <span class="sr-only">Toggle theme</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container py-10">
+    <div class="mb-6">
+      <h1 class="card-title" style="font-size: 1.5rem;">{{ title }}</h1>
+    </div>
+
+    <div *ngIf="loading" class="card">
+      <div class="card-header">
+        <div class="flex items-center">
+          <svg class="h-5 w-5 text-primary mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+          <span>Loading API documentation...</span>
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="error && !apiDocs" class="card">
+      <div class="card-header">
+        <h2 class="card-title">Error loading API documentation</h2>
+        <p class="card-description mb-4">{{ error }}</p>
+        <button (click)="loadApiDocs()" class="btn btn-primary">
+          Retry
+        </button>
+      </div>
+    </div>
+
+    <div *ngIf="apiDocs && !loading" class="mb-6">
+      <div class="card mb-6">
+        <div class="card-header">
+          <div class="flex justify-between items-center">
+            <h2 class="card-title">{{ apiDocs.info?.title || 'API Documentation' }}</h2>
+            <div class="dropdown-container">
+              <button class="three-dot-menu" (click)="toggleMainDropdown($event)">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                  <circle cx="12" cy="12" r="1"></circle>
+                  <circle cx="12" cy="5" r="1"></circle>
+                  <circle cx="12" cy="19" r="1"></circle>
+                </svg>
+              </button>
+            </div>
+            <!-- Main dropdown menu positioned outside for better visibility -->
+            <div class="main-dropdown-wrapper" *ngIf="showMainDropdown" (click)="$event.stopPropagation()">
+              <div class="dropdown-menu main-dropdown-menu">
+                <div class="dropdown-item export-item" (click)="$event.stopPropagation(); toggleExportMainDropdown($event)">
+                  <span>Export</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <polyline points="9 18 15 12 9 6"></polyline>
+                  </svg>
+                </div>
+              </div>
+            </div>
+            <!-- Sub dropdown for export options -->
+            <div class="main-sub-dropdown-wrapper" *ngIf="showExportMainDropdown" (click)="$event.stopPropagation()">
+              <div class="sub-dropdown-menu main-sub-dropdown-menu">
+                <div class="dropdown-item" (click)="$event.stopPropagation(); exportAsPostman()">
+                  Export as Postman Collection
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="card-description" [innerHTML]="(apiDocs.info?.description || 'No description available') | markdown"></div>
+          <p *ngIf="apiDocs.info?.version" class="text-muted" style="font-size: 0.875rem; margin-top: 0.5rem;">Version: {{ apiDocs.info.version }}</p>
+        </div>
+      </div>
+
+      <!-- Global Authentication -->
+      <app-global-authentication
+        [securitySchemes]="securitySchemesArray"
+      ></app-global-authentication>
+
+      <div *ngIf="apiDocs.paths">
+        <h3 class="card-title mb-4" style="font-size: 1.125rem;">Endpoints</h3>
+        <div *ngFor="let path of paths" class="card mb-4">
+          <div class="card-header path-header" (click)="togglePathExpanded(path)" style="background-color: var(--muted-color); cursor: pointer;">
+            <div class="flex justify-between items-center">
+              <h4 style="font-weight: 500;">{{ path.path }}</h4>
+              <div class="flex items-center">
+                <button class="toggle-button ml-2">
+                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.rotate-icon]="path.isExpanded" style="width: 16px; height: 16px;">
+                    <polyline points="6 9 12 15 18 9"></polyline>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="card-content" *ngIf="path.isExpanded">
+            <div *ngFor="let method of path.methods" class="method-container" style="border-top: 1px solid var(--border-color); padding: 0.75rem 0;">
+              <div class="flex justify-between items-center mb-2 method-header" (click)="toggleMethodAccordion(method)">
+                <div class="flex items-center cursor-pointer">
+                  <span class="method-badge"
+                        [ngStyle]="{
+                          'background-color': method.type === 'GET' ? '#dbeafe' :
+                                           method.type === 'POST' ? '#dcfce7' :
+                                           method.type === 'PUT' ? '#fef9c3' :
+                                           method.type === 'DELETE' ? '#fee2e2' :
+                                           '#cffafe',
+                          'color': method.type === 'GET' ? '#1e40af' :
+                                   method.type === 'POST' ? '#166534' :
+                                   method.type === 'PUT' ? '#854d0e' :
+                                   method.type === 'DELETE' ? '#991b1b' :
+                                   '#155e75'
+                        }">
+                    {{ method.type }}
+                  </span>
+                  <span class="method-summary">{{ method.operation.summary || 'No summary' }}</span>
+                </div>
+                <div class="flex items-center">
+                  <div class="dropdown-container">
+                    <button class="three-dot-menu" (click)="$event.stopPropagation(); toggleDropdown($event, method)">
+                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                        <circle cx="12" cy="12" r="1"></circle>
+                        <circle cx="12" cy="5" r="1"></circle>
+                        <circle cx="12" cy="19" r="1"></circle>
+                      </svg>
+                    </button>
+                  </div>
+                  <!-- Dropdown menu positioned outside the container for better visibility -->
+                  <div class="dropdown-menu-wrapper" *ngIf="method.showDropdown" (click)="$event.stopPropagation()">
+                    <div class="dropdown-menu">
+                      <div class="dropdown-item" (click)="$event.stopPropagation(); showCurlPopup($event, path.path, method)">
+                        Export as cURL
+                      </div>
+                    </div>
+                  </div>
+                  <button *ngIf="!method.isExpanded" class="try-it-out-button ml-2" (click)="$event.stopPropagation(); startTryItOut(method, path.path)">
+                    Try it out
+                  </button>
+                  <button class="toggle-button ml-2" (click)="$event.stopPropagation(); toggleMethodExpanded(method)">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.rotate-icon]="method.isExpanded" style="width: 16px; height: 16px;">
+                      <polyline points="6 9 12 15 18 9"></polyline>
+                    </svg>
+                  </button>
+                </div>
+              </div>
+
+              <div *ngIf="method.isExpanded" class="method-content">
+                <div class="method-description mb-4">
+                  <div [innerHTML]="(method.operation.description || 'No description available') | markdown"></div>
+                </div>
+
+                <!-- Try it out component -->
+                <app-try-it-out
+                  #tryItOutComponent
+                  [path]="path.path"
+                  [method]="method.type"
+                  [operation]="method.operation"
+                  [securitySchemes]="securitySchemes"
+                  [security]="method.operation.security || apiDocs.security || []"
+                  [autoExpand]="method.autoExpand || false"
+                  (onCancel)="closeMethodAccordion(method)"
+                ></app-try-it-out>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<!-- Curl Popup -->
+<div class="curl-popup-overlay" *ngIf="showCurlModal" (click)="closeCurlPopup()">
+  <div class="curl-popup" (click)="$event.stopPropagation()">
+    <div class="curl-popup-header">
+      <h3>cURL Command</h3>
+      <button class="close-button" (click)="closeCurlPopup()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="curl-popup-content">
+      <pre class="curl-code">{{ curlCommand }}</pre>
+    </div>
+    <div class="curl-popup-footer">
+      <button class="copy-button" (click)="copyCurlCommand()">
+        {{ curlCopied ? 'Copied!' : 'Copy to Clipboard' }}
+      </button>
+    </div>
+  </div>
+</div>

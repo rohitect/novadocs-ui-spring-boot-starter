@@ -1,0 +1,212 @@
+.response-display {
+  margin-top: 1.5rem;
+}
+
+.response-container {
+  border: 1px solid #eaeaea;
+  border-radius: 0.25rem;
+  overflow: hidden;
+}
+
+.response-header {
+  display: flex;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #fafafa;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.response-title {
+  font-weight: 600;
+  font-size: 1rem;
+  color: #3b4151;
+  margin-right: 0.75rem;
+}
+
+.status-badge {
+  font-size: 0.75rem;
+  padding: 0.25rem 0.5rem;
+  border-radius: 0.25rem;
+  font-weight: 600;
+}
+
+.status-success {
+  background-color: #e6f7ee;
+  color: #49cc90;
+}
+
+.status-error {
+  background-color: #fae7e7;
+  color: #f93e3e;
+}
+
+.status-redirect {
+  background-color: #fff6e5;
+  color: #fca130;
+}
+
+.status-info {
+  background-color: #e8f4fd;
+  color: #61affe;
+}
+
+.headers-section,
+.body-section {
+  border-bottom: 1px solid #eaeaea;
+}
+
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem 1rem;
+  background-color: #fafafa;
+  border-bottom: 1px solid #eaeaea;
+}
+
+.section-title {
+  font-weight: 600;
+  font-size: 0.875rem;
+  color: #3b4151;
+}
+
+.content-type-label {
+  font-size: 0.75rem;
+  color: #6b7280;
+}
+
+.headers-content,
+.body-content {
+  padding: 0.75rem 1rem;
+  background-color: white;
+}
+
+.headers-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.875rem;
+}
+
+.header-name-column,
+.header-value-column {
+  text-align: left;
+  padding-bottom: 0.5rem;
+  font-weight: 600;
+  color: #3b4151;
+}
+
+.header-name-column {
+  width: 30%;
+  padding-right: 1rem;
+}
+
+.header-row {
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.header-row:last-child {
+  border-bottom: none;
+}
+
+.header-name,
+.header-value {
+  padding: 0.5rem 0;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+}
+
+.header-name {
+  padding-right: 1rem;
+  color: #3b4151;
+  font-weight: 500;
+}
+
+.header-value {
+  color: #555;
+  word-break: break-all;
+}
+
+.no-headers-message,
+.no-body-message {
+  color: #6b7280;
+  padding: 0.5rem 0;
+}
+
+.body-code {
+  white-space: pre-wrap;
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+  font-size: 0.875rem;
+  overflow: auto;
+  max-height: 24rem;
+  color: #3b4151;
+  line-height: 1.5;
+}
+
+// Dark mode adjustments
+:host-context(.dark-theme) {
+  .response-container {
+    border-color: #444;
+  }
+
+  .response-header,
+  .section-header {
+    background-color: #262626;
+    border-color: #444;
+  }
+
+  .response-title,
+  .section-title {
+    color: #e1e1e1;
+  }
+
+  .headers-section,
+  .body-section {
+    border-color: #444;
+  }
+
+  .headers-content,
+  .body-content {
+    background-color: #333;
+  }
+
+  .header-name-column,
+  .header-value-column {
+    color: #e1e1e1;
+  }
+
+  .header-row {
+    border-color: #444;
+  }
+
+  .header-name {
+    color: #e1e1e1;
+  }
+
+  .header-value {
+    color: #aaa;
+  }
+
+  .no-headers-message,
+  .no-body-message {
+    color: #888;
+  }
+
+  .body-code {
+    color: #e1e1e1;
+  }
+
+  .status-success {
+    background-color: rgba(73, 204, 144, 0.1);
+  }
+
+  .status-error {
+    background-color: rgba(249, 62, 62, 0.1);
+  }
+
+  .status-redirect {
+    background-color: rgba(252, 161, 48, 0.1);
+  }
+
+  .status-info {
+    background-color: rgba(97, 175, 254, 0.1);
+  }
+}

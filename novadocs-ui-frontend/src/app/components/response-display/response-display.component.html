@@ -1,0 +1,56 @@
+<div *ngIf="response" class="response-display">
+  <div class="response-container">
+    <div class="response-header">
+      <h3 class="response-title">Response</h3>
+      <span
+        class="status-badge"
+        [ngClass]="{
+          'status-success': isSuccess,
+          'status-error': isError,
+          'status-redirect': isRedirect,
+          'status-info': !isSuccess && !isError && !isRedirect
+        }"
+      >
+        {{ response.status }} {{ getStatusText() }}
+      </span>
+    </div>
+
+    <div class="headers-section">
+      <div class="section-header">
+        <h4 class="section-title">Headers</h4>
+      </div>
+      <div class="headers-content">
+        <table class="headers-table">
+          <thead>
+            <tr>
+              <th class="header-name-column">Name</th>
+              <th class="header-value-column">Value</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let header of headers" class="header-row">
+              <td class="header-name">{{ header.name }}</td>
+              <td class="header-value">{{ header.value }}</td>
+            </tr>
+            <tr *ngIf="headers.length === 0" class="no-headers-row">
+              <td colspan="2" class="no-headers-message">No headers</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="body-section">
+      <div class="section-header">
+        <h4 class="section-title">Body</h4>
+        <div class="content-type-label">
+          {{ getContentType() }}
+        </div>
+      </div>
+      <div class="body-content">
+        <pre *ngIf="formattedBody" class="body-code">{{ formattedBody }}</pre>
+        <div *ngIf="!formattedBody" class="no-body-message">No body content</div>
+      </div>
+    </div>
+  </div>
+</div>

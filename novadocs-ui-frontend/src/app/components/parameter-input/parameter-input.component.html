@@ -1,0 +1,60 @@
+<div class="parameter-input">
+  <div class="parameter-header">
+    <label [for]="'param-' + parameter.name" class="parameter-name">
+      {{ parameter.name }}
+      <span *ngIf="parameter.required" class="required-indicator">*</span>
+    </label>
+    <span class="parameter-type">
+      {{ parameter.in }}
+    </span>
+  </div>
+
+  <div *ngIf="parameter.description" class="parameter-description">
+    {{ parameter.description }}
+  </div>
+
+  <div [ngSwitch]="getInputType()" class="parameter-control">
+    <!-- Boolean parameter -->
+    <div *ngSwitchCase="'boolean'" class="boolean-control">
+      <input
+        type="checkbox"
+        [id]="'param-' + parameter.name"
+        [(ngModel)]="value"
+        (ngModelChange)="onValueChange()"
+        class="boolean-input"
+      >
+      <label [for]="'param-' + parameter.name" class="boolean-label">
+        {{ value ? 'True' : 'False' }}
+      </label>
+    </div>
+
+    <!-- Select for enum values -->
+    <select
+      *ngSwitchCase="'enum'"
+      [id]="'param-' + parameter.name"
+      [(ngModel)]="value"
+      (ngModelChange)="onValueChange()"
+      class="enum-select"
+    >
+      <option [value]="undefined">Select a value</option>
+      <option *ngFor="let option of parameter.schema?.enum" [value]="option">
+        {{ option }}
+      </option>
+    </select>
+
+    <!-- Default text input -->
+    <input
+      *ngSwitchDefault
+      [type]="getInputType()"
+      [id]="'param-' + parameter.name"
+      [(ngModel)]="value"
+      (ngModelChange)="onValueChange()"
+      [placeholder]="parameter.example || 'Enter value'"
+      class="text-input"
+    >
+  </div>
+
+  <div *ngIf="parameter.required && showValidation && !value" class="validation-message">
+    This field is required
+  </div>
+</div>

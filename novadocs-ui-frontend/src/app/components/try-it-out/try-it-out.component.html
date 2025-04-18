@@ -1,0 +1,87 @@
+<div class="try-it-out">
+  <div class="mb-4">
+    <button
+      type="button"
+      
+      class="px-3 py-2 text-sm font-medium rounded-md"
+      [ngClass]="{'bg-blue-500 text-white': showTryItOut, 'bg-gray-200 dark:bg-gray-700': !showTryItOut}"
+    >
+      {{ showTryItOut ? 'Cancel' : 'Try it out' }}
+    </button>
+  </div>
+
+  <div *ngIf="showTryItOut">
+    <!-- Authentication Section -->
+    <!-- <app-authentication
+    [securitySchemes]="securitySchemes"
+    [security]="security"
+  ></app-authentication> -->
+  <div *ngIf="parameters.length > 0" class="mb-4">
+    <h3 class="font-medium mb-3">Parameters</h3>
+
+    <div *ngFor="let param of parameters">
+      <app-parameter-input
+        [parameter]="param"
+        [showValidation]="showValidation"
+        (valueChanged)="onParameterChange($event)"
+      ></app-parameter-input>
+    </div>
+  </div>
+    <!-- 
+
+   
+
+    <div *ngIf="hasRequestBody" class="mb-4">
+      <app-request-body
+        [requestBody]="operation.requestBody"
+        (bodyChanged)="onBodyChange($event)"
+      ></app-request-body>
+    </div>
+
+    <div class="mb-4">
+      <button
+        type="button"
+        (click)="executeRequest($event)"
+        class="px-4 py-2 bg-blue-500 text-white font-medium rounded-md hover:bg-blue-600 disabled:opacity-50 disabled:cursor-not-allowed"
+        [disabled]="isLoading || !isRequestValid()"
+      >
+        <span *ngIf="isLoading" class="mr-2">
+          <svg class="animate-spin h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+          </svg>
+        </span>
+        Execute
+      </button>
+
+      <div *ngIf="showValidation && !isRequestValid()" class="text-red-500 text-sm mt-2">
+        Please fill in all required fields
+      </div>
+    </div>
+
+    <app-response-display
+      *ngIf="response"
+      [response]="response"
+    ></app-response-display>
+
+    <div *ngIf="error" class="p-3 bg-red-100 text-red-800 rounded-md mt-4">
+      {{ error }}
+    </div>
+
+    <div *ngIf="curlCommand" class="mt-4">
+      <div class="flex justify-between items-center mb-2">
+        <h3 class="font-medium">cURL</h3>
+        <button
+          type="button"
+          (click)="copyCurl($event)"
+          class="px-2 py-1 text-xs bg-gray-200 dark:bg-gray-700 rounded hover:bg-gray-300 dark:hover:bg-gray-600"
+        >
+          {{ curlCopied ? 'Copied!' : 'Copy' }}
+        </button>
+      </div>
+      <div class="bg-gray-100 dark:bg-gray-800 p-3 rounded-md">
+        <pre class="whitespace-pre-wrap font-mono text-sm overflow-auto max-h-60">{{ curlCommand }}</pre>
+      </div>
+    </div> -->
+  </div>
+</div>

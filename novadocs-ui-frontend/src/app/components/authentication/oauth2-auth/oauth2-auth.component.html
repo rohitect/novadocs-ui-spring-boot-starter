@@ -1,0 +1,137 @@
+<div class="oauth2-auth">
+  <!-- Flow Selection -->
+  <div *ngIf="availableFlows.length > 0" class="mb-3">
+    <label class="block text-sm mb-1">OAuth2 Flow</label>
+    <select 
+      class="w-full p-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      [(ngModel)]="selectedFlow"
+      (ngModelChange)="selectFlow($event)"
+    >
+      <option *ngFor="let flow of availableFlows" [value]="flow">
+        {{ flow === 'authorizationCode' ? 'Authorization Code' : 
+           flow === 'clientCredentials' ? 'Client Credentials' : 
+           flow === 'implicit' ? 'Implicit' : 'Password' }}
+      </option>
+    </select>
+  </div>
+  
+  <!-- Access Token Input -->
+  <div class="mb-3">
+    <label [for]="'oauth2-token-' + securitySchemeName" class="block text-sm mb-1">Access Token</label>
+    <input 
+      [id]="'oauth2-token-' + securitySchemeName" 
+      type="text" 
+      [(ngModel)]="accessToken"
+      (ngModelChange)="onAccessTokenChange()"
+      placeholder="Enter access token"
+      class="w-full p-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+    >
+  </div>
+  
+  <!-- Scopes -->
+  <div *ngIf="Object.keys(availableScopes).length > 0" class="mb-3">
+    <label class="block text-sm mb-1">Scopes</label>
+    <div class="border rounded-md border-gray-300 dark:border-gray-600 p-2 max-h-40 overflow-y-auto">
+      <div *ngFor="let scope of Object.keys(availableScopes)" class="flex items-center mb-1">
+        <input 
+          [id]="'scope-' + securitySchemeName + '-' + scope" 
+          type="checkbox"
+          [checked]="isScopeSelected(scope)"
+          (change)="toggleScope(scope)"
+          [disabled]="isScopeRequired(scope)"
+          class="mr-2 h-4 w-4"
+        >
+        <label [for]="'scope-' + securitySchemeName + '-' + scope" class="text-sm flex-1">
+          {{ scope }}
+          <span *ngIf="isScopeRequired(scope)" class="text-red-500 ml-1">*</span>
+        </label>
+        <span class="text-xs text-gray-600 dark:text-gray-400">{{ availableScopes[scope] }}</span>
+      </div>
+    </div>
+  </div>
+  
+  <!-- Authorization UI -->
+  <div *ngIf="selectedFlow === 'implicit' || selectedFlow === 'authorizationCode'" class="mb-3">
+    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+      Authorization URL: {{ authorizationUrl }}
+    </div>
+    
+    <div class="mb-2">
+      <label [for]="'oauth2-client-id-' + securitySchemeName" class="block text-sm mb-1">Client ID</label>
+      <input 
+        [id]="'oauth2-client-id-' + securitySchemeName" 
+        type="text" 
+        [(ngModel)]="clientId"
+        placeholder="Enter client ID"
+        class="w-full p-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      >
+    </div>
+  </div>
+  
+  <!-- Password Flow UI -->
+  <div *ngIf="selectedFlow === 'password'" class="mb-3">
+    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+      Token URL: {{ tokenUrl }}
+    </div>
+    
+    <div class="mb-2">
+      <label [for]="'oauth2-username-' + securitySchemeName" class="block text-sm mb-1">Username</label>
+      <input 
+        [id]="'oauth2-username-' + securitySchemeName" 
+        type="text" 
+        [(ngModel)]="username"
+        placeholder="Enter username"
+        class="w-full p-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      >
+    </div>
+    
+    <div class="mb-2">
+      <label [for]="'oauth2-password-' + securitySchemeName" class="block text-sm mb-1">Password</label>
+      <input 
+        [id]="'oauth2-password-' + securitySchemeName" 
+        type="password" 
+        [(ngModel)]="password"
+        placeholder="Enter password"
+        class="w-full p-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      >
+    </div>
+  </div>
+  
+  <!-- Client Credentials Flow UI -->
+  <div *ngIf="selectedFlow === 'clientCredentials'" class="mb-3">
+    <div class="text-sm text-gray-600 dark:text-gray-400 mb-2">
+      Token URL: {{ tokenUrl }}
+    </div>
+    
+    <div class="mb-2">
+      <label [for]="'oauth2-client-id-' + securitySchemeName" class="block text-sm mb-1">Client ID</label>
+      <input 
+        [id]="'oauth2-client-id-' + securitySchemeName" 
+        type="text" 
+        [(ngModel)]="clientId"
+        placeholder="Enter client ID"
+        class="w-full p-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      >
+    </div>
+    
+    <div class="mb-2">
+      <label [for]="'oauth2-client-secret-' + securitySchemeName" class="block text-sm mb-1">Client Secret</label>
+      <input 
+        [id]="'oauth2-client-secret-' + securitySchemeName" 
+        type="password" 
+        [(ngModel)]="clientSecret"
+        placeholder="Enter client secret"
+        class="w-full p-2 border rounded-md bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600"
+      >
+    </div>
+  </div>
+  
+  <!-- Authorize Button -->
+  <button 
+    *ngIf="selectedFlow !== ''"
+    (click)="authorize()" 
+    class="px-3 py-2 text-sm font-medium rounded-md bg-blue-500 text-white hover:bg-blue-600"
+  >
+    Authorize
+  </button>
+</div>

@@ -153,3 +153,10 @@ project_idea.md
 package-lock.json
 
 others/**/**
+
+novadocs-ui-frontend/dist/**
+novadocs-ui-frontend/node_modules/**
+novadocs-ui-frontend/.vscode/**
+novadocs-ui-frontend/.angular/**
+novadocs-ui-frontend/.editorconfig
+novadocs-ui-frontend/package-lock.json

@@ -1,0 +1,25 @@
+<div class="basic-auth">
+  <div class="auth-input-container">
+    <label [for]="'basic-username-' + securitySchemeName" class="auth-input-label">Username</label>
+    <input
+      [id]="'basic-username-' + securitySchemeName"
+      type="text"
+      [(ngModel)]="username"
+      (ngModelChange)="onCredentialsChange()"
+      placeholder="Enter username"
+      class="auth-input"
+    >
+  </div>
+
+  <div class="auth-input-container">
+    <label [for]="'basic-password-' + securitySchemeName" class="auth-input-label">Password</label>
+    <input
+      [id]="'basic-password-' + securitySchemeName"
+      type="password"
+      [(ngModel)]="password"
+      (ngModelChange)="onCredentialsChange()"
+      placeholder="Enter password"
+      class="auth-input"
+    >
+  </div>
+</div>

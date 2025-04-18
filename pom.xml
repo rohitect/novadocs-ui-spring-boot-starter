@@ -6,7 +6,7 @@
 
     <groupId>io.github.rohitect</groupId>
     <artifactId>novadocs-ui</artifactId>
-    <version>0.1.25</version>
+    <version>0.1.26</version>
     <packaging>pom</packaging>
 
     <name>NovaDocs UI</name>

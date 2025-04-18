@@ -1,0 +1,101 @@
+<div class="try-it-out">
+  <div class="try-it-out-header">
+    
+  </div>
+
+  <div *ngIf="isExpanded" class="try-it-out-content">
+ 
+
+      <!-- Parameters Section -->
+      <div *ngIf="parameters.length > 0" class="parameters-section">
+        <div class="parameters-header">
+          <h3 class="section-title">Parameters</h3>
+        </div>
+
+        <div class="parameters-list">
+          <app-parameter-input
+            *ngFor="let param of parameters"
+            [parameter]="param"
+            [showValidation]="showValidation"
+            (valueChanged)="onParameterChange($event)"
+            class="parameter-item"
+          ></app-parameter-input>
+        </div>
+      </div>
+
+      <!-- Request Body Section -->
+      <div *ngIf="hasRequestBody" class="request-body-section">
+        <app-request-body
+          [requestBody]="operation.requestBody"
+          (bodyChanged)="onBodyChange($event)"
+        ></app-request-body>
+      </div>
+
+      <!-- Execute Button Section -->
+      <div class="execute-button-section">
+        <div *ngIf="showValidation && !isRequestValid()" class="validation-error">
+          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="error-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="8" x2="12" y2="12"></line>
+            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+          </svg>
+          Please fill in all required fields
+        </div>
+
+        <div class="button-container">
+          <button
+            type="button"
+            (click)="cancel()"
+            class="cancel-button"
+            [disabled]="isLoading"
+          >
+            Cancel
+          </button>
+
+          <button
+            type="button"
+            (click)="executeRequest($event)"
+            class="execute-button"
+            [disabled]="isLoading || !isRequestValid()"
+          >
+            <span *ngIf="isLoading" class="loading-spinner">
+              <svg class="animate-spin h-4 w-4 inline-block" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+              </svg>
+            </span>
+            Execute
+          </button>
+        </div>
+      </div>
+
+      <!-- Response Section -->
+      <app-response-display
+        *ngIf="response"
+        [response]="response"
+        class="response-section"
+      ></app-response-display>
+
+      <!-- Error Section -->
+      <div *ngIf="error" class="error-section">
+        {{ error }}
+      </div>
+
+      <!-- cURL Command Section -->
+      <div *ngIf="curlCommand" class="curl-section">
+        <div class="curl-header">
+          <h3 class="section-title">cURL</h3>
+          <button
+            type="button"
+            (click)="copyCurl($event)"
+            class="copy-button"
+          >
+            {{ curlCopied ? 'Copied!' : 'Copy' }}
+          </button>
+        </div>
+        <div class="curl-content">
+          <pre class="curl-code">{{ curlCommand }}</pre>
+        </div>
+      </div>
+    </div>
+  </div>

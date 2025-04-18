@@ -1,0 +1,17 @@
+<div class="api-key-auth">
+  <div class="auth-description">
+    API Key will be sent in <span class="auth-highlight">{{ securityScheme.in }}</span> as <span class="auth-highlight">"{{ securityScheme.name }}"</span>
+  </div>
+
+  <div class="auth-input-container">
+    <label [for]="'api-key-' + securitySchemeName" class="auth-input-label">API Key</label>
+    <input
+      [id]="'api-key-' + securitySchemeName"
+      type="text"
+      [(ngModel)]="apiKey"
+      (ngModelChange)="onApiKeyChange()"
+      placeholder="Enter API key"
+      class="auth-input"
+    >
+  </div>
+</div>

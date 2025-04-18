@@ -1,0 +1,103 @@
+<div>
+  <!-- Header -->
+  <header>
+    <div class="container">
+      <a class="logo" routerLink="/">
+        <span>NovaDoc UI</span>
+      </a>
+      <nav>
+        <a routerLink="/api-docs">API Playground</a>
+        <a href="#">Kafka</a>
+      </nav>
+      <div class="right-side">
+        <button class="btn btn-icon theme-toggle" (click)="toggleTheme()" aria-label="Toggle theme" title="{{ isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme' }}">
+          <svg *ngIf="isDarkTheme" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+            <circle cx="12" cy="12" r="4"></circle>
+            <path d="M12 2v2"></path>
+            <path d="M12 20v2"></path>
+            <path d="m4.93 4.93 1.41 1.41"></path>
+            <path d="m17.66 17.66 1.41 1.41"></path>
+            <path d="M2 12h2"></path>
+            <path d="M20 12h2"></path>
+            <path d="m6.34 17.66-1.41 1.41"></path>
+            <path d="m19.07 4.93-1.41 1.41"></path>
+          </svg>
+          <svg *ngIf="!isDarkTheme" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
+            <path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"></path>
+          </svg>
+          <span class="sr-only">Toggle theme</span>
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <!-- Main Content -->
+  <main class="container py-10">
+    <div class="grid grid-cols-1 md:grid-cols-2 mt-12">
+      <!-- API Playground Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="flex items-center justify-between mb-4">
+            <div class="icon-container">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <rect width="18" height="18" x="3" y="3" rx="2" />
+                <path d="M7 7h.01" />
+                <path d="M11 7h.01" />
+                <path d="M15 7h.01" />
+                <path d="M7 11h.01" />
+                <path d="M11 11h.01" />
+                <path d="M15 11h.01" />
+                <path d="M7 15h.01" />
+                <path d="M11 15h.01" />
+                <path d="M15 15h.01" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="card-title">API Playground</h3>
+          <p class="card-description">Explore and test your APIs with our interactive playground</p>
+        </div>
+        <div class="card-footer">
+          <a routerLink="/api-docs">
+            <button class="btn btn-primary">
+              Launch Playground
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 h-4 w-4">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
+
+      <!-- Kafka Card -->
+      <div class="card">
+        <div class="card-header">
+          <div class="flex items-center justify-between mb-4">
+            <div class="icon-container">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="icon">
+                <path d="M21 15V6" />
+                <path d="M18.5 18a2.5 2.5 0 1 0 0-5 2.5 2.5 0 0 0 0 5Z" />
+                <path d="M12 12H3" />
+                <path d="M16 6H3" />
+                <path d="M12 18H3" />
+              </svg>
+            </div>
+          </div>
+          <h3 class="card-title">Kafka</h3>
+          <p class="card-description">Manage and monitor your Kafka streams and topics</p>
+        </div>
+        <div class="card-footer">
+          <a href="#">
+            <button class="btn btn-primary">
+              Open Kafka
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="ml-2 h-4 w-4">
+                <path d="M5 12h14" />
+                <path d="m12 5 7 7-7 7" />
+              </svg>
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
+  </main>
+</div>

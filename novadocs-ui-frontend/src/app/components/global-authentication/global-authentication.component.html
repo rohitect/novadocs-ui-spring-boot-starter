@@ -1,0 +1,99 @@
+<div class="global-auth-container">
+  <div class="global-auth-header" (click)="toggleExpanded()">
+    <h3 class="global-auth-title">Global Authentication</h3>
+    <button class="toggle-button">
+      <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.rotate-icon]="isExpanded">
+        <polyline points="6 9 12 15 18 9"></polyline>
+      </svg>
+    </button>
+  </div>
+
+  <div class="global-auth-content" *ngIf="isExpanded">
+    <div *ngIf="securitySchemes && securitySchemes.length > 0">
+      <!-- Authentication Type Selector -->
+      <div class="auth-type-selector">
+        <label class="auth-type-label">Authentication Type:</label>
+        <div class="auth-type-options">
+          <div class="auth-type-option" [class.selected]="selectedAuthType === 'basic'" (click)="selectAuthType('basic')">
+            <span>Basic</span>
+          </div>
+          <div class="auth-type-option" [class.selected]="selectedAuthType === 'bearer'" (click)="selectAuthType('bearer')">
+            <span>Bearer</span>
+          </div>
+          <div class="auth-type-option" [class.selected]="selectedAuthType === 'apiKey'" (click)="selectAuthType('apiKey')">
+            <span>API Key</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- API Key Authentication -->
+      <div *ngIf="selectedAuthType === 'apiKey'" class="auth-input-container">
+        <div class="auth-description">
+          API Key will be sent in <span class="auth-highlight">header</span> as <span class="auth-highlight">"X-API-Key"</span>
+        </div>
+
+        <div class="auth-input-container">
+          <label for="global-api-key" class="auth-input-label">API Key</label>
+          <input
+            id="global-api-key"
+            type="text"
+            [(ngModel)]="globalApiKey"
+            placeholder="Enter API key"
+            class="auth-input"
+          >
+        </div>
+      </div>
+
+      <!-- Bearer Authentication -->
+      <div *ngIf="selectedAuthType === 'bearer'" class="auth-input-container">
+        <label for="global-bearer-token" class="auth-input-label">Token</label>
+        <input
+          id="global-bearer-token"
+          type="text"
+          placeholder="Enter bearer token"
+          class="auth-input"
+          [(ngModel)]="globalBearerToken"
+        >
+      </div>
+
+      <!-- Basic Authentication -->
+      <div *ngIf="selectedAuthType === 'basic'" class="auth-input-container">
+        <div class="auth-input-container">
+          <label for="global-basic-username" class="auth-input-label">Username</label>
+          <input
+            id="global-basic-username"
+            type="text"
+            [(ngModel)]="globalBasicAuth.username"
+            placeholder="Enter username"
+            class="auth-input"
+          >
+        </div>
+
+        <div class="auth-input-container">
+          <label for="global-basic-password" class="auth-input-label">Password</label>
+          <input
+            id="global-basic-password"
+            type="password"
+            [(ngModel)]="globalBasicAuth.password"
+            placeholder="Enter password"
+            class="auth-input"
+          >
+        </div>
+      </div>
+
+      <!-- Update Button -->
+      <div class="update-button-container">
+        <button type="button" class="update-button" (click)="updateAuthentication()">
+          Update Authentication
+        </button>
+        <div *ngIf="updateSuccess" class="update-success-message">
+          Authentication updated successfully!
+        </div>
+      </div>
+    </div>
+
+    <div *ngIf="!securitySchemes || securitySchemes.length === 0" class="no-auth-message">
+      No authentication schemes available for this API.
+    </div>
+  </div>
+</div>

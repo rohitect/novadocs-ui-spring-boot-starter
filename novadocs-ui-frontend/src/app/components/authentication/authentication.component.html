@@ -1,0 +1,82 @@
+<div class="authentication-container">
+  <div class="auth-header">
+    <h3 class="auth-title">Authentication</h3>
+  </div>
+
+  <div *ngIf="activeSchemes.length === 0" class="no-auth-message">
+    No authentication required for this operation.
+  </div>
+
+  <div *ngFor="let schemeInfo of activeSchemes" class="auth-scheme-container">
+    <div class="auth-scheme-header">
+      <h4 class="auth-scheme-name">{{ getSchemeDisplayName(schemeInfo.name, schemeInfo.scheme) }}</h4>
+      <span class="auth-scheme-type">
+        {{ getSchemeType(schemeInfo.scheme) }}
+      </span>
+    </div>
+
+    <!-- Basic Authentication -->
+    <app-basic-auth
+      *ngIf="isBasicAuth(schemeInfo.scheme)"
+      [securitySchemeName]="schemeInfo.name"
+      [securityScheme]="schemeInfo.scheme">
+    </app-basic-auth>
+
+    <!-- Bearer Authentication -->
+    <div *ngIf="isBearerAuth(schemeInfo.scheme)" class="auth-input-container">
+      <label [for]="'bearer-token-' + schemeInfo.name" class="auth-input-label">Token</label>
+      <input
+        [id]="'bearer-token-' + schemeInfo.name"
+        type="text"
+        placeholder="Enter bearer token"
+        class="auth-input"
+        #bearerTokenInput
+        (change)="authService.setAuthCredential(schemeInfo.name, {
+          type: 'http',
+          scheme: 'bearer',
+          token: bearerTokenInput.value
+        })"
+      >
+    </div>
+
+    <!-- API Key Authentication -->
+    <app-api-key-auth
+      *ngIf="isApiKeyAuth(schemeInfo.scheme)"
+      [securitySchemeName]="schemeInfo.name"
+      [securityScheme]="schemeInfo.scheme">
+    </app-api-key-auth>
+
+    <!-- OAuth 2.0 Authentication -->
+    <app-oauth2-auth
+      *ngIf="isOAuth2Auth(schemeInfo.scheme)"
+      [securitySchemeName]="schemeInfo.name"
+      [securityScheme]="schemeInfo.scheme"
+      [scopes]="getScopes(schemeInfo.name)">
+    </app-oauth2-auth>
+
+    <!-- OpenID Connect Authentication -->
+    <ng-container *ngIf="isOpenIdConnectAuth(schemeInfo.scheme)">
+      <div class="auth-input-container">
+        <p class="auth-description">
+          OpenID Connect authentication using discovery URL:
+          <code class="auth-code">
+            {{ getOpenIdConnectUrl(schemeInfo.scheme) }}
+          </code>
+        </p>
+        <label [for]="'openid-token-' + schemeInfo.name" class="auth-input-label">Access Token</label>
+        <input
+          [id]="'openid-token-' + schemeInfo.name"
+          type="text"
+          placeholder="Enter access token"
+          class="auth-input"
+          #openIdTokenInput
+          (change)="authService.setAuthCredential(schemeInfo.name, {
+            type: 'openIdConnect',
+            oauthToken: openIdTokenInput.value,
+            oauthTokenType: 'Bearer'
+          })"
+        >
+      </div>
+    </ng-container>
+  </div>
+</div>
