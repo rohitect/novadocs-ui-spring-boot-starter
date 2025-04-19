@@ -1,0 +1,140 @@
+.json-viewer {
+  font-family: monospace;
+  font-size: 0.875rem;
+  line-height: 1.5;
+
+  &.root-level {
+    > .json-node > .json-node-content {
+      margin-left: 0;
+
+      > .json-value {
+        padding-left: 0;
+      }
+
+      > .toggle-icon {
+        padding-left: 0;
+      }
+    }
+
+    > .json-node > .json-node-closing {
+      .closing-brace {
+        padding-left: 0;
+      }
+    }
+  }
+
+  .json-node {
+    margin-left: 1.5rem;
+    position: relative;
+
+    &:before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -0.75rem;
+      bottom: 0;
+      width: 1px;
+      background-color: var(--right-panel-border, #cbd5e1);
+      opacity: 0.5;
+    }
+  }
+
+  .json-node-content {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.125rem 0;
+    margin-left: -1.5rem; /* Negative margin to offset the node margin */
+
+    &:hover {
+      background-color: rgba(0, 0, 0, 0.05);
+      border-radius: 0.25rem;
+    }
+  }
+
+  .json-node-closing {
+    margin-left: 0;
+    padding-left: 0;
+
+    .closing-brace {
+      position: relative;
+      left: 0;
+      margin-left: 0;
+      display: inline-block;
+      padding-left: 1.5rem; /* Add padding to offset the negative margin */
+    }
+  }
+
+  .json-children {
+    margin-left: 1rem;
+  }
+
+  .toggle-icon {
+    cursor: pointer;
+    margin-right: 0.25rem;
+    width: 1rem;
+    display: inline-flex;
+    justify-content: center;
+    transition: transform 0.2s ease;
+    padding-left: 1.5rem; /* Add padding to offset the negative margin */
+
+    &:hover {
+      color: var(--primary-color, #4990e2);
+    }
+  }
+
+  .json-key {
+    color: var(--json-key-color, #7c3aed);
+    margin-right: 0.25rem;
+    font-weight: 600;
+    padding-left: 1.5rem; /* Add padding to offset the negative margin */
+  }
+
+  .json-separator {
+    margin-right: 0.5rem;
+    color: var(--right-panel-text, #1e293b);
+  }
+
+  .json-value {
+    color: var(--right-panel-text, #1e293b);
+    padding-left: 1.5rem; /* Add padding to offset the negative margin */
+
+    .opening-brace {
+      position: relative;
+      left: 0;
+      margin-left: 0;
+      padding-left: 0;
+      display: inline-block;
+    }
+  }
+
+  .json-string {
+    color: var(--json-string-color, #16a34a);
+  }
+
+  .json-number {
+    color: var(--json-number-color, #0284c7);
+  }
+
+  .json-boolean {
+    color: var(--json-boolean-color, #ea580c);
+  }
+
+  .json-null {
+    color: var(--json-null-color, #dc2626);
+    font-style: italic;
+  }
+
+  .json-preview {
+    color: var(--muted-foreground-color, #94a3b8);
+    font-style: italic;
+    font-size: 0.75rem;
+  }
+}
+
+:host-context(.dark-theme) {
+  --json-key-color: #a78bfa;
+  --json-string-color: #4ade80;
+  --json-number-color: #38bdf8;
+  --json-boolean-color: #fb923c;
+  --json-null-color: #f87171;
+}

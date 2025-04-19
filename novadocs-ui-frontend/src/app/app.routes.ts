@@ -5,5 +5,7 @@ import { LandingPageComponent } from './components/landing-page/landing-page.com
 export const routes: Routes = [
   { path: '', component: LandingPageComponent },
   { path: 'api-docs', component: ApiDocsComponent },
+  { path: 'api-docs/:tag/:path/:method', component: ApiDocsComponent },
+  { path: 'api-docs/info', component: ApiDocsComponent },
   { path: '**', redirectTo: '' }
 ];

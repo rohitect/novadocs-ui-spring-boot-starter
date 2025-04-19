@@ -19,7 +19,7 @@ interface SecuritySchemeInfo {
 export class GlobalAuthenticationComponent implements OnInit {
   @Input() securitySchemes: SecuritySchemeInfo[] = [];
 
-  isExpanded = false;
+  // Always expanded now that we've removed the accordion
   selectedAuthType: 'basic' | 'bearer' | 'apiKey' = 'basic';
   updateSuccess = false;
 
@@ -165,9 +165,10 @@ export class GlobalAuthenticationComponent implements OnInit {
     }
   }
 
-  toggleExpanded(): void {
-    this.isExpanded = !this.isExpanded;
-  }
+  // No longer needed since we removed the accordion
+  // toggleExpanded(): void {
+  //   this.isExpanded = !this.isExpanded;
+  // }
 
   getSchemeDisplayName(name: string, scheme: any): string {
     if (scheme.type === 'http' && scheme.scheme === 'basic') {

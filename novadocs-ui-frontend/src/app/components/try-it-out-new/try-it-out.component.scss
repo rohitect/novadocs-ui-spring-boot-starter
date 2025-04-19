@@ -1,13 +1,24 @@
 // Main container
 .try-it-out {
-  margin-top: 1rem;
   font-family: sans-serif;
-  color: #3b4151;
+  color: var(--right-panel-text, #3b4151);
+  height: 100%;
+  display: flex;
+  flex-direction: column;
 }
 
 // Try it out header
 .try-it-out-header {
   margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid var(--right-panel-border, #eaeaea);
+}
+
+.try-it-out-title {
+  font-size: 1.125rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--right-panel-text, #3b4151);
 }
 
 // Try it out button styling
@@ -42,9 +53,12 @@
   }
 }
 
-// Content container when expanded
+// Content container
 .try-it-out-content {
-  padding: 1rem 0;
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
 }
 
 // Section styling
@@ -54,18 +68,20 @@
 .response-section,
 .curl-section {
   margin-bottom: 1.5rem;
-  border: 1px solid #eaeaea;
+  border: 1px solid var(--right-panel-border, #eaeaea);
   border-radius: 0.25rem;
   overflow: hidden;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  background-color: #fff;
+  background-color: var(--right-panel-bg, #fff);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 // Parameters header
 .parameters-header {
   padding: 0.75rem 1rem;
-  background-color: #fafafa;
-  border-bottom: 1px solid #eaeaea;
+  background-color: var(--right-panel-tabs-bg, #fafafa);
+  border-bottom: 1px solid var(--right-panel-border, #eaeaea);
+  transition: background-color 0.3s ease, border-color 0.3s ease;
 }
 
 // Section titles
@@ -73,7 +89,8 @@
   font-size: 1rem;
   font-weight: 600;
   margin: 0;
-  color: #3b4151;
+  color: var(--right-panel-text, #3b4151);
+  transition: color 0.3s ease;
 }
 
 // Parameters list
@@ -106,7 +123,7 @@
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
-  background-color: #4990e2;
+  background-color: var(--primary-color, #4990e2);
   color: white;
   border: none;
   border-radius: 0.25rem;
@@ -115,7 +132,7 @@
   box-shadow: 0 1px 3px rgba(73, 144, 226, 0.3);
 
   &:hover:not(:disabled) {
-    background-color: #3c7bc8;
+    background-color: var(--primary-hover-color, #3c7bc8);
     box-shadow: 0 2px 5px rgba(73, 144, 226, 0.4);
     transform: translateY(-1px);
   }
@@ -136,7 +153,7 @@
   padding: 0.625rem 1.25rem;
   font-size: 0.875rem;
   font-weight: 600;
-  background-color: #f44336;
+  background-color: var(--danger-color, #f44336);
   color: white;
   border: none;
   border-radius: 0.25rem;
@@ -145,7 +162,7 @@
   box-shadow: 0 1px 2px rgba(244, 67, 54, 0.3);
 
   &:hover:not(:disabled) {
-    background-color: #e53935;
+    background-color: var(--danger-hover-color, #e53935);
     box-shadow: 0 2px 4px rgba(244, 67, 54, 0.4);
     transform: translateY(-1px);
   }
@@ -263,13 +280,21 @@
 
 // Dark mode adjustments
 :host-context(.dark-theme) {
+  .try-it-out {
+    color: var(--right-panel-text, #f8fafc);
+  }
+
+  .try-it-out-title {
+    color: var(--right-panel-text, #f8fafc);
+  }
+
   .try-it-out-button-inactive {
-    background-color: #333;
-    color: #eee;
-    border-color: #555;
+    background-color: var(--right-panel-button-bg, #334155);
+    color: var(--right-panel-text, #f8fafc);
+    border-color: var(--right-panel-border, #475569);
 
     &:hover {
-      background-color: #444;
+      background-color: var(--right-panel-button-hover-bg, #475569);
     }
   }
 
@@ -278,17 +303,17 @@
   .request-body-section,
   .response-section,
   .curl-section {
-    background-color: #1e1e1e;
-    border-color: #444;
+    background-color: var(--right-panel-bg, #1e293b);
+    border-color: var(--right-panel-border, #334155);
   }
 
   .parameters-header {
-    background-color: #262626;
-    border-color: #444;
+    background-color: var(--right-panel-tabs-bg, #0f172a);
+    border-color: var(--right-panel-border, #334155);
   }
 
   .section-title {
-    color: #e1e1e1;
+    color: var(--right-panel-text, #f8fafc);
   }
 
   .validation-error {
@@ -296,31 +321,31 @@
   }
 
   .copy-button {
-    background-color: #333;
-    border-color: #555;
-    color: #eee;
+    background-color: var(--right-panel-button-bg, #334155);
+    border-color: var(--right-panel-border, #475569);
+    color: var(--right-panel-text, #f8fafc);
 
     &:hover {
-      background-color: #444;
+      background-color: var(--right-panel-button-hover-bg, #475569);
     }
 
     &:active {
-      background-color: #222;
+      background-color: var(--right-panel-button-hover-bg, #475569);
     }
   }
 
   .curl-header {
-    background-color: #262626;
-    border-color: #444;
+    background-color: var(--right-panel-tabs-bg, #0f172a);
+    border-color: var(--right-panel-border, #334155);
   }
 
   .curl-content {
-    background-color: #333;
-    color: #eee;
+    background-color: var(--right-panel-code-bg, #0f172a);
+    color: var(--right-panel-text, #f8fafc);
   }
 
   .curl-code {
-    color: #e1e1e1;
+    color: var(--right-panel-text, #f8fafc);
   }
 
   .error-section {

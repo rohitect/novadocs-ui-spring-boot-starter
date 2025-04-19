@@ -33,9 +33,10 @@ export class TryItOutComponent implements OnChanges {
   @Input() autoExpand: boolean = false;
 
   @Output() onCancel = new EventEmitter<void>();
+  @Output() onResponse = new EventEmitter<any>();
 
   // Direct state properties instead of using a BehaviorSubject
-  isExpanded = false;
+  isExpanded = true; // Always expanded
   isLoading = false;
   showValidation = false;
   parameters: Parameter[] = [];
@@ -470,6 +471,10 @@ export class TryItOutComponent implements OnChanges {
         headers: response.headers,
         body: responseBody
       };
+
+      // Emit the response
+      this.onResponse.emit(this.response);
+
       this.isLoading = false;
       this.cdr.markForCheck();
     } catch (err) {

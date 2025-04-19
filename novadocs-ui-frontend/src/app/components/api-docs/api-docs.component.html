@@ -1,15 +1,17 @@
 <div>
   <!-- Header -->
   <header>
-    <div class="container">
-      <a class="logo" routerLink="/">
-        <span>NovaDoc UI</span>
-      </a>
-      <nav>
-        <a routerLink="/api-docs">API Playground</a>
-        <a href="#">Kafka</a>
-      </nav>
-      <div class="right-side">
+    <div class="container full-width">
+      <div class="header-left">
+        <a class="logo" routerLink="/">
+          <span>NovaDoc UI</span>
+        </a>
+        <nav>
+          <a routerLink="/api-docs">API Playground</a>
+          <a href="#">Kafka</a>
+        </nav>
+      </div>
+      <div class="header-right">
         <button class="btn btn-icon theme-toggle" (click)="toggleTheme()" aria-label="Toggle theme" title="{{ isDarkTheme ? 'Switch to light theme' : 'Switch to dark theme' }}">
           <svg *ngIf="isDarkTheme" xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="h-5 w-5">
             <circle cx="12" cy="12" r="4"></circle>
@@ -32,161 +34,481 @@
   </header>
 
   <!-- Main Content -->
-  <main class="container py-10">
-    <div class="mb-6">
-      <h1 class="card-title" style="font-size: 1.5rem;">{{ title }}</h1>
-    </div>
-
-    <div *ngIf="loading" class="card">
-      <div class="card-header">
-        <div class="flex items-center">
-          <svg class="h-5 w-5 text-primary mr-3" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
-            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
-            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
-          </svg>
-          <span>Loading API documentation...</span>
-        </div>
+  <main class="api-docs-container">
+    <!-- Loading State -->
+    <div *ngIf="loading" class="loading-container">
+      <div class="loading-spinner">
+        <svg class="h-8 w-8 text-primary" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+          <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+          <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>Loading API documentation...</span>
       </div>
     </div>
 
-    <div *ngIf="error && !apiDocs" class="card">
-      <div class="card-header">
-        <h2 class="card-title">Error loading API documentation</h2>
-        <p class="card-description mb-4">{{ error }}</p>
+    <!-- Error State -->
+    <div *ngIf="error && !apiDocs" class="error-container">
+      <div class="error-content">
+        <h2 class="error-title">Error loading API documentation</h2>
+        <p class="error-message">{{ error }}</p>
         <button (click)="loadApiDocs()" class="btn btn-primary">
           Retry
         </button>
       </div>
     </div>
 
-    <div *ngIf="apiDocs && !loading" class="mb-6">
-      <div class="card mb-6">
-        <div class="card-header">
-          <div class="flex justify-between items-center">
-            <h2 class="card-title">{{ apiDocs.info?.title || 'API Documentation' }}</h2>
-            <div class="dropdown-container">
-              <button class="three-dot-menu" (click)="toggleMainDropdown($event)">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                  <circle cx="12" cy="12" r="1"></circle>
-                  <circle cx="12" cy="5" r="1"></circle>
-                  <circle cx="12" cy="19" r="1"></circle>
+    <!-- API Documentation Three-Pane Layout -->
+    <div *ngIf="apiDocs && !loading" class="three-pane-layout">
+
+      <!-- Left Sidebar: API Endpoints List -->
+      <div class="left-sidebar">
+        <!-- API Title Button -->
+        <div class="api-title-button" (click)="showApiInfo()">
+          <div class="api-title-content">
+            <h3 class="sidebar-api-title">{{ apiDocs.info?.title || 'API Documentation' }}</h3>
+            <span class="api-version-badge" *ngIf="apiDocs.info?.version">v{{ apiDocs.info.version }}</span>
+          </div>
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="info-icon">
+            <circle cx="12" cy="12" r="10"></circle>
+            <line x1="12" y1="16" x2="12" y2="12"></line>
+            <line x1="12" y1="8" x2="12.01" y2="8"></line>
+          </svg>
+        </div>
+
+        <div class="sidebar-header">
+          <div class="search-container">
+            <input
+              type="text"
+              placeholder="Search endpoints..."
+              class="search-input"
+              [(ngModel)]="searchQuery"
+              (input)="filterEndpoints()"
+            >
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="search-icon">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </div>
+        </div>
+
+        <!-- API Endpoints List -->
+        <div class="endpoints-list">
+          <div *ngFor="let tag of getTagsWithPaths()" class="endpoint-category">
+            <div class="category-header" (click)="toggleTagExpanded(tag)">
+              <span class="category-name">{{ tag.name }}</span>
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.rotate-icon]="tag.isExpanded" class="category-icon">
+                <polyline points="6 9 12 15 18 9"></polyline>
+              </svg>
+            </div>
+            <div *ngIf="tag.isExpanded" class="category-items">
+              <div *ngFor="let endpoint of tag.endpoints" class="endpoint-item" [class.active]="isEndpointActive(endpoint)" (click)="selectEndpoint(endpoint)">
+                <span class="method-badge"
+                  [ngStyle]="{
+                    'background-color': endpoint.method.type === 'GET' ? '#dbeafe' :
+                                     endpoint.method.type === 'POST' ? '#dcfce7' :
+                                     endpoint.method.type === 'PUT' ? '#fef9c3' :
+                                     endpoint.method.type === 'DELETE' ? '#fee2e2' :
+                                     '#cffafe',
+                    'color': endpoint.method.type === 'GET' ? '#1e40af' :
+                             endpoint.method.type === 'POST' ? '#166534' :
+                             endpoint.method.type === 'PUT' ? '#854d0e' :
+                             endpoint.method.type === 'DELETE' ? '#991b1b' :
+                             '#155e75'
+                  }">
+                  {{ endpoint.method.type }}
+                </span>
+                <span class="endpoint-summary">{{ endpoint.method.operation.summary || endpoint.path }}</span>
+                <svg *ngIf="endpoint.method.operation.security && endpoint.method.operation.security.length > 0"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="14"
+                     height="14"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="security-icon">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
                 </svg>
-              </button>
-            </div>
-            <!-- Main dropdown menu positioned outside for better visibility -->
-            <div class="main-dropdown-wrapper" *ngIf="showMainDropdown" (click)="$event.stopPropagation()">
-              <div class="dropdown-menu main-dropdown-menu">
-                <div class="dropdown-item export-item" (click)="$event.stopPropagation(); toggleExportMainDropdown($event)">
-                  <span>Export</span>
-                  <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                    <polyline points="9 18 15 12 9 6"></polyline>
-                  </svg>
-                </div>
-              </div>
-            </div>
-            <!-- Sub dropdown for export options -->
-            <div class="main-sub-dropdown-wrapper" *ngIf="showExportMainDropdown" (click)="$event.stopPropagation()">
-              <div class="sub-dropdown-menu main-sub-dropdown-menu">
-                <div class="dropdown-item" (click)="$event.stopPropagation(); exportAsPostman()">
-                  Export as Postman Collection
-                </div>
               </div>
             </div>
           </div>
-          <div class="card-description" [innerHTML]="(apiDocs.info?.description || 'No description available') | markdown"></div>
-          <p *ngIf="apiDocs.info?.version" class="text-muted" style="font-size: 0.875rem; margin-top: 0.5rem;">Version: {{ apiDocs.info.version }}</p>
+        </div>
+
+        <!-- Authentication Button (Fixed at Bottom) -->
+        <div class="auth-button" (click)="toggleAuthModal()">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="auth-icon">
+            <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+            <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+          </svg>
+          <span>Authentication</span>
         </div>
       </div>
 
-      <!-- Global Authentication -->
-      <app-global-authentication
-        [securitySchemes]="securitySchemesArray"
-      ></app-global-authentication>
+      <!-- Center Pane: API Details -->
+      <div class="center-pane">
+        <!-- API Info Header - Hidden since we now show detailed API info by default -->
+        <div class="api-info-header" *ngIf="!selectedEndpoint && !showingApiInfo">
+          <h1 class="api-title">{{ apiDocs.info?.title || 'API Documentation' }}</h1>
+          <div class="api-description" [innerHTML]="(apiDocs.info?.description || 'No description available') | markdown"></div>
+          <p *ngIf="apiDocs.info?.version" class="api-version">Version: {{ apiDocs.info.version }}</p>
+        </div>
 
-      <div *ngIf="apiDocs.paths">
-        <h3 class="card-title mb-4" style="font-size: 1.125rem;">Endpoints</h3>
-        <div *ngFor="let path of paths" class="card mb-4">
-          <div class="card-header path-header" (click)="togglePathExpanded(path)" style="background-color: var(--muted-color); cursor: pointer;">
-            <div class="flex justify-between items-center">
-              <h4 style="font-weight: 500;">{{ path.path }}</h4>
-              <div class="flex items-center">
-                <button class="toggle-button ml-2">
-                  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.rotate-icon]="path.isExpanded" style="width: 16px; height: 16px;">
-                    <polyline points="6 9 12 15 18 9"></polyline>
-                  </svg>
-                </button>
+        <!-- Detailed API Info -->
+        <div class="api-info-details" *ngIf="!selectedEndpoint && showingApiInfo">
+          <div class="api-info-details-header">
+            <h1 class="api-title">{{ apiDocs.info?.title || 'API Documentation' }}</h1>
+            <p *ngIf="apiDocs.info?.version" class="api-version">Version: {{ apiDocs.info.version }}</p>
+          </div>
+
+          <div class="api-info-details-content">
+            <div class="api-info-description" [innerHTML]="(apiDocs.info?.description || 'No description available') | markdown"></div>
+
+            <div class="api-info-contact" *ngIf="apiDocs.info?.contact">
+              <h3>Contact</h3>
+              <div *ngIf="apiDocs.info.contact.name"><strong>Name:</strong> {{ apiDocs.info.contact.name }}</div>
+              <div *ngIf="apiDocs.info.contact.email"><strong>Email:</strong> <a href="mailto:{{ apiDocs.info.contact.email }}">{{ apiDocs.info.contact.email }}</a></div>
+              <div *ngIf="apiDocs.info.contact.url"><strong>URL:</strong> <a href="{{ apiDocs.info.contact.url }}" target="_blank">{{ apiDocs.info.contact.url }}</a></div>
+            </div>
+
+            <div class="api-info-license" *ngIf="apiDocs.info?.license">
+              <h3>License</h3>
+              <div>
+                <strong>Name:</strong> {{ apiDocs.info.license.name }}
+                <a *ngIf="apiDocs.info.license.url" href="{{ apiDocs.info.license.url }}" target="_blank">(View License)</a>
+              </div>
+            </div>
+
+            <div class="api-info-terms" *ngIf="apiDocs.info?.termsOfService">
+              <h3>Terms of Service</h3>
+              <a href="{{ apiDocs.info.termsOfService }}" target="_blank">{{ apiDocs.info.termsOfService }}</a>
+            </div>
+
+            <div class="api-info-servers" *ngIf="apiDocs.servers && apiDocs.servers.length > 0">
+              <h3>Servers</h3>
+              <div class="servers-list">
+                <div *ngFor="let server of apiDocs.servers" class="server-item">
+                  <div><strong>URL:</strong> {{ server.url }}</div>
+                  <div *ngIf="server.description"><strong>Description:</strong> {{ server.description }}</div>
+                </div>
               </div>
             </div>
           </div>
-          <div class="card-content" *ngIf="path.isExpanded">
-            <div *ngFor="let method of path.methods" class="method-container" style="border-top: 1px solid var(--border-color); padding: 0.75rem 0;">
-              <div class="flex justify-between items-center mb-2 method-header" (click)="toggleMethodAccordion(method)">
-                <div class="flex items-center cursor-pointer">
-                  <span class="method-badge"
-                        [ngStyle]="{
-                          'background-color': method.type === 'GET' ? '#dbeafe' :
-                                           method.type === 'POST' ? '#dcfce7' :
-                                           method.type === 'PUT' ? '#fef9c3' :
-                                           method.type === 'DELETE' ? '#fee2e2' :
-                                           '#cffafe',
-                          'color': method.type === 'GET' ? '#1e40af' :
-                                   method.type === 'POST' ? '#166534' :
-                                   method.type === 'PUT' ? '#854d0e' :
-                                   method.type === 'DELETE' ? '#991b1b' :
-                                   '#155e75'
-                        }">
-                    {{ method.type }}
-                  </span>
-                  <span class="method-summary">{{ method.operation.summary || 'No summary' }}</span>
-                </div>
-                <div class="flex items-center">
-                  <div class="dropdown-container">
-                    <button class="three-dot-menu" (click)="$event.stopPropagation(); toggleDropdown($event, method)">
-                      <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                        <circle cx="12" cy="12" r="1"></circle>
-                        <circle cx="12" cy="5" r="1"></circle>
-                        <circle cx="12" cy="19" r="1"></circle>
-                      </svg>
-                    </button>
+        </div>
+
+        <!-- Selected Endpoint Details -->
+        <div *ngIf="selectedEndpoint" class="endpoint-details">
+          <!-- Endpoint Header -->
+          <div class="endpoint-header">
+            <div class="endpoint-title-container">
+              <span class="method-badge large"
+                [ngStyle]="{
+                  'background-color': selectedEndpoint.method.type === 'GET' ? '#dbeafe' :
+                                   selectedEndpoint.method.type === 'POST' ? '#dcfce7' :
+                                   selectedEndpoint.method.type === 'PUT' ? '#fef9c3' :
+                                   selectedEndpoint.method.type === 'DELETE' ? '#fee2e2' :
+                                   '#cffafe',
+                  'color': selectedEndpoint.method.type === 'GET' ? '#1e40af' :
+                           selectedEndpoint.method.type === 'POST' ? '#166534' :
+                           selectedEndpoint.method.type === 'PUT' ? '#854d0e' :
+                           selectedEndpoint.method.type === 'DELETE' ? '#991b1b' :
+                           '#155e75'
+                }">
+                {{ selectedEndpoint.method.type }}
+              </span>
+              <h2 class="endpoint-title">
+                {{ selectedEndpoint.path }}
+                <svg *ngIf="selectedEndpoint.method.operation.security && selectedEndpoint.method.operation.security.length > 0"
+                     xmlns="http://www.w3.org/2000/svg"
+                     width="16"
+                     height="16"
+                     viewBox="0 0 24 24"
+                     fill="none"
+                     stroke="currentColor"
+                     stroke-width="2"
+                     stroke-linecap="round"
+                     stroke-linejoin="round"
+                     class="security-icon-title">
+                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect>
+                  <path d="M7 11V7a5 5 0 0 1 10 0v4"></path>
+                </svg>
+              </h2>
+            </div>
+            <div class="endpoint-actions">
+              <div class="dropdown-container">
+                <button class="three-dot-menu" (click)="toggleDropdown($event, selectedEndpoint.method)">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                    <circle cx="12" cy="12" r="1"></circle>
+                    <circle cx="12" cy="5" r="1"></circle>
+                    <circle cx="12" cy="19" r="1"></circle>
+                  </svg>
+                </button>
+                <!-- Dropdown menu positioned inside the container for better positioning -->
+                <div class="dropdown-menu-wrapper" *ngIf="selectedEndpoint.method.showDropdown" (click)="$event.stopPropagation()">
+                  <div class="dropdown-menu">
+                    <div class="dropdown-item" (click)="$event.stopPropagation(); showCurlPopup($event, selectedEndpoint.path, selectedEndpoint.method)">
+                      Export as cURL
+                    </div>
                   </div>
-                  <!-- Dropdown menu positioned outside the container for better visibility -->
-                  <div class="dropdown-menu-wrapper" *ngIf="method.showDropdown" (click)="$event.stopPropagation()">
-                    <div class="dropdown-menu">
-                      <div class="dropdown-item" (click)="$event.stopPropagation(); showCurlPopup($event, path.path, method)">
-                        Export as cURL
+                </div>
+              </div>
+              <!-- <button class="try-it-button" (click)="trySelectedEndpoint()">
+                Try it
+              </button> -->
+            </div>
+          </div>
+
+          <!-- Endpoint Description -->
+          <div class="endpoint-description">
+            <div [innerHTML]="(selectedEndpoint.method.operation.description || 'No description available') | markdown"></div>
+          </div>
+
+          <!-- Parameters Section -->
+          <div class="parameters-section" *ngIf="getEndpointParameters().length > 0">
+            <h3 class="section-title">Parameters</h3>
+            <div class="parameters-table">
+              <div class="parameters-table-header">
+                <div class="param-name-col">Name</div>
+                <div class="param-in-col">In</div>
+                <div class="param-required-col">Required</div>
+                <div class="param-type-col">Type</div>
+                <div class="param-desc-col">Description</div>
+              </div>
+              <div class="parameters-table-body">
+                <div class="parameter-row" *ngFor="let param of getEndpointParameters()">
+                  <div class="param-name-col">
+                    <span class="param-name">{{ param.name }}</span>
+                  </div>
+                  <div class="param-in-col">
+                    <span class="param-in-badge" [ngClass]="param.in">{{ param.in }}</span>
+                  </div>
+                  <div class="param-required-col">
+                    <span class="param-required" *ngIf="param.required">✓</span>
+                    <span class="param-optional" *ngIf="!param.required">-</span>
+                  </div>
+                  <div class="param-type-col">
+                    <span class="param-type">{{ getParameterType(param) }}</span>
+                  </div>
+                  <div class="param-desc-col">
+                    <div class="param-description" [innerHTML]="param.description || 'No description' | markdown"></div>
+                    <div class="param-constraints" *ngIf="getParameterConstraints(param)">
+                      <span class="constraint-label">Constraints:</span> {{ getParameterConstraints(param) }}
+                    </div>
+                    <div class="param-example" *ngIf="param.example !== undefined">
+                      <span class="example-label">Example:</span> <code>{{ param.example }}</code>
+                    </div>
+                    <div class="param-enum" *ngIf="param.schema?.enum && param.schema.enum.length > 0">
+                      <span class="enum-label">Allowed values:</span>
+                      <div class="enum-values">
+                        <code *ngFor="let value of param.schema.enum">{{ value }}</code>
                       </div>
                     </div>
                   </div>
-                  <button *ngIf="!method.isExpanded" class="try-it-out-button ml-2" (click)="$event.stopPropagation(); startTryItOut(method, path.path)">
-                    Try it out
-                  </button>
-                  <button class="toggle-button ml-2" (click)="$event.stopPropagation(); toggleMethodExpanded(method)">
-                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" [class.rotate-icon]="method.isExpanded" style="width: 16px; height: 16px;">
-                      <polyline points="6 9 12 15 18 9"></polyline>
-                    </svg>
-                  </button>
                 </div>
-              </div>
-
-              <div *ngIf="method.isExpanded" class="method-content">
-                <div class="method-description mb-4">
-                  <div [innerHTML]="(method.operation.description || 'No description available') | markdown"></div>
-                </div>
-
-                <!-- Try it out component -->
-                <app-try-it-out
-                  #tryItOutComponent
-                  [path]="path.path"
-                  [method]="method.type"
-                  [operation]="method.operation"
-                  [apiDocs]="apiDocs"
-                  [securitySchemes]="securitySchemes"
-                  [security]="method.operation.security || apiDocs.security || []"
-                  [autoExpand]="method.autoExpand || false"
-                  (onCancel)="closeMethodAccordion(method)"
-                ></app-try-it-out>
               </div>
             </div>
+          </div>
+
+          <!-- Request Body Section -->
+          <div class="request-body-section" *ngIf="hasRequestBody()">
+            <h3 class="section-title">Request Body</h3>
+            <div class="request-body-required" *ngIf="selectedEndpoint.method.operation.requestBody?.required">
+              <span class="required-badge">Required</span>
+            </div>
+            <div class="request-body-description" *ngIf="selectedEndpoint.method.operation.requestBody?.description">
+              <div [innerHTML]="selectedEndpoint.method.operation.requestBody.description | markdown"></div>
+            </div>
+
+            <div class="content-types-tabs">
+              <div class="tabs-header">
+                <div
+                  *ngFor="let contentType of getRequestBodyContentTypes()"
+                  class="tab"
+                  [class.active]="selectedRequestBodyContentType === contentType"
+                  (click)="selectRequestBodyContentType(contentType)">
+                  {{ contentType }}
+                </div>
+              </div>
+
+              <div class="tab-content">
+                <div class="schema-section">
+                  <div class="schema-header">
+                    <h4 class="schema-title">Schema</h4>
+                  </div>
+                  <div class="schema-content">
+                    <div class="schema-properties" *ngIf="getRequestBodySchema()">
+                      <div class="schema-table">
+                        <div class="schema-table-header">
+                          <div class="schema-name-col">Name</div>
+                          <div class="schema-type-col">Type</div>
+                          <div class="schema-required-col">Required</div>
+                          <div class="schema-desc-col">Description</div>
+                        </div>
+                        <div class="schema-table-body">
+                          <ng-container *ngTemplateOutlet="schemaProperties; context: {properties: getRequestBodyProperties(), required: getRequestBodyRequired(), level: 0}"></ng-container>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="example-section">
+                  <div class="example-header">
+                    <h4 class="example-title">Example</h4>
+                    <button class="copy-button" (click)="copyRequestBodyExample()">
+                      {{ requestBodyExampleCopied ? 'Copied!' : 'Copy' }}
+                    </button>
+                  </div>
+                  <div class="example-content">
+                    <pre class="example-code">{{ getRequestBodyExample() }}</pre>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Responses Section -->
+          <div class="responses-section">
+            <h3 class="section-title">Responses</h3>
+            <div class="responses-list">
+              <div *ngFor="let response of getResponsesForSelectedEndpoint()"
+                   class="response-item"
+                   [class.active]="isResponseActive(response.code)"
+                   (click)="selectResponse(response.code)">
+                <div class="response-code"
+                     [ngClass]="{
+                       'success': getResponseCodeNumber(response.code) >= 200 && getResponseCodeNumber(response.code) < 300,
+                       'redirect': getResponseCodeNumber(response.code) >= 300 && getResponseCodeNumber(response.code) < 400,
+                       'client-error': getResponseCodeNumber(response.code) >= 400 && getResponseCodeNumber(response.code) < 500,
+                       'server-error': getResponseCodeNumber(response.code) >= 500
+                     }">
+                  {{ response.code }}
+                </div>
+                <div class="response-description">{{ response.description || 'No description' }}</div>
+                <svg *ngIf="isResponseActive(response.code)" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="chevron-icon">
+                  <polyline points="9 18 15 12 9 6"></polyline>
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Try It Out Section - Moved to right panel -->
+          <!-- This section is intentionally left empty as we've moved the Try It Out component to the right panel -->
+        </div>
+      </div>
+
+      <!-- Right Pane: Try It Out and Response Samples -->
+      <div class="right-pane" *ngIf="selectedEndpoint">
+        <!-- Tabs for Try It Out and Response Samples -->
+        <div class="right-pane-tabs">
+          <button
+            class="right-pane-tab"
+            [class.active]="rightPaneActiveTab === 'try-it-out'"
+            (click)="setRightPaneTab('try-it-out')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+              <polyline points="17 10 12 15 7 10"></polyline>
+            </svg>
+            Try It Out
+          </button>
+          <button
+            class="right-pane-tab"
+            [class.active]="rightPaneActiveTab === 'response-samples'"
+            [class.disabled]="!selectedResponseCode"
+            (click)="setRightPaneTab('response-samples')">
+            <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="tab-icon">
+              <polyline points="16 18 22 12 16 6"></polyline>
+              <polyline points="8 6 2 12 8 18"></polyline>
+            </svg>
+            Response Samples
+          </button>
+        </div>
+
+        <!-- Try It Out Section -->
+        <div class="right-pane-content try-it-out-container" [hidden]="rightPaneActiveTab !== 'try-it-out'">
+          <app-try-it-out
+            #tryItOutComponent
+            [path]="selectedEndpoint.path"
+            [method]="selectedEndpoint.method.type"
+            [operation]="selectedEndpoint.method.operation"
+            [apiDocs]="apiDocs"
+            [securitySchemes]="securitySchemes"
+            [security]="selectedEndpoint.method.operation.security || apiDocs.security || []"
+            [autoExpand]="true"
+            (onCancel)="hideTryItOut()"
+            (onResponse)="handleResponse($event)"
+          ></app-try-it-out>
+        </div>
+
+        <!-- Response Samples Section -->
+        <div class="right-pane-content response-samples" [hidden]="rightPaneActiveTab !== 'response-samples' || !selectedResponseCode">
+          <div class="response-samples-header">
+            <h3 class="samples-title">Response samples</h3>
+            <div class="samples-tabs">
+              <button
+                *ngFor="let code of getAvailableResponseCodes()"
+                class="tab-button"
+                [class.active]="selectedResponseCode === code"
+                (click)="selectResponse(code)">
+                {{ code }}
+              </button>
+            </div>
+          </div>
+
+          <div class="content-type-selector">
+            <div class="content-type">{{ getSelectedResponseContentType() }}</div>
+          </div>
+
+          <div class="response-sample-content">
+            <div class="sample-actions">
+              <button class="action-button" (click)="copyResponseSample()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="action-icon">
+                  <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                  <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                </svg>
+                Copy
+              </button>
+              <button class="action-button" (click)="expandAll()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="action-icon">
+                  <polyline points="7 13 12 18 17 13"></polyline>
+                  <polyline points="7 6 12 11 17 6"></polyline>
+                </svg>
+                Expand all
+              </button>
+              <button class="action-button" (click)="collapseAll()">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="action-icon">
+                  <polyline points="7 11 12 6 17 11"></polyline>
+                  <polyline points="7 18 12 13 17 18"></polyline>
+                </svg>
+                Collapse all
+              </button>
+            </div>
+
+            <div class="sample-code-container">
+              <app-json-viewer
+                #jsonViewer
+                *ngIf="selectedResponseCode && responseSamples[selectedResponseCode]"
+                [json]="responseSamples[selectedResponseCode]"
+                [expanded]="jsonViewerExpanded"
+                [showKeys]="false"
+                [isRoot]="true">
+              </app-json-viewer>
+              <pre class="sample-code" *ngIf="!selectedResponseCode || !responseSamples[selectedResponseCode]">{{ getFormattedResponseSample() }}</pre>
+            </div>
+          </div>
+        </div>
+
+        <!-- No Response Selected Message -->
+        <div class="right-pane-content no-response-message" [hidden]="rightPaneActiveTab !== 'response-samples' || selectedResponseCode">
+          <div class="message-container">
+            <svg xmlns="http://www.w3.org/2000/svg" width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1" stroke-linecap="round" stroke-linejoin="round" class="message-icon">
+              <circle cx="12" cy="12" r="10"></circle>
+              <line x1="12" y1="8" x2="12" y2="12"></line>
+              <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3 class="message-title">No Response Selected</h3>
+            <p class="message-text">Select a response code from the center panel to view the response sample.</p>
           </div>
         </div>
       </div>
@@ -216,3 +538,72 @@
     </div>
   </div>
 </div>
+
+
+
+<!-- Authentication Modal -->
+<div class="modal-overlay" *ngIf="showAuthModal" (click)="closeAuthModal()">
+  <div class="modal-container auth-modal" (click)="$event.stopPropagation()">
+    <div class="modal-header">
+      <h2 class="modal-title">Global Authentication</h2>
+      <button class="close-button" (click)="closeAuthModal()">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <line x1="18" y1="6" x2="6" y2="18"></line>
+          <line x1="6" y1="6" x2="18" y2="18"></line>
+        </svg>
+      </button>
+    </div>
+    <div class="modal-content auth-modal-content">
+      <app-global-authentication
+        [securitySchemes]="securitySchemesArray"
+      ></app-global-authentication>
+    </div>
+  </div>
+</div>
+
+<!-- Schema Properties Template -->
+<ng-template #schemaProperties let-properties="properties" let-required="required" let-level="level">
+  <ng-container *ngFor="let prop of getObjectEntries(properties)">
+    <div class="schema-row" [style.paddingLeft.px]="level * 20">
+      <div class="schema-name-col">
+        <span class="schema-prop-name">{{ prop[0] }}</span>
+      </div>
+      <div class="schema-type-col">
+        <span class="schema-type" [ngClass]="getPropertyType(prop[1])">{{ getPropertyType(prop[1]) }}</span>
+        <span class="schema-format" *ngIf="prop[1].format">({{ prop[1].format }})</span>
+      </div>
+      <div class="schema-required-col">
+        <span class="schema-required" *ngIf="isPropertyRequired(prop[0], required)">✓</span>
+        <span class="schema-optional" *ngIf="!isPropertyRequired(prop[0], required)">-</span>
+      </div>
+      <div class="schema-desc-col">
+        <div class="schema-description" [innerHTML]="prop[1].description || 'No description' | markdown"></div>
+        <div class="schema-constraints" *ngIf="getPropertyConstraints(prop[1])">
+          <span class="constraint-label">Constraints:</span> {{ getPropertyConstraints(prop[1]) }}
+        </div>
+        <div class="schema-example" *ngIf="prop[1].example !== undefined">
+          <span class="example-label">Example:</span> <code>{{ prop[1].example }}</code>
+        </div>
+        <div class="schema-enum" *ngIf="prop[1].enum && prop[1].enum.length > 0">
+          <span class="enum-label">Allowed values:</span>
+          <div class="enum-values">
+            <code *ngFor="let value of prop[1].enum">{{ value }}</code>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Recursively render nested properties -->
+    <ng-container *ngIf="prop[1].type === 'object' && prop[1].properties">
+      <ng-container *ngTemplateOutlet="schemaProperties; context: {properties: prop[1].properties, required: prop[1].required || [], level: level + 1}"></ng-container>
+    </ng-container>
+
+    <!-- Handle array items with object type -->
+    <ng-container *ngIf="prop[1].type === 'array' && prop[1].items && prop[1].items.type === 'object' && prop[1].items.properties">
+      <div class="schema-array-items" [style.paddingLeft.px]="(level + 1) * 20">
+        <div class="schema-array-label">Array items ({{ prop[0] }}):</div>
+        <ng-container *ngTemplateOutlet="schemaProperties; context: {properties: prop[1].items.properties, required: prop[1].items.required || [], level: level + 2}"></ng-container>
+      </div>
+    </ng-container>
+  </ng-container>
+</ng-template>

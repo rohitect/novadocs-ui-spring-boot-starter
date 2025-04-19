@@ -1,0 +1,55 @@
+<div class="json-viewer" [class.root-level]="isRoot">
+  <div *ngFor="let node of jsonNodes" class="json-node">
+    <div class="json-node-content">
+      <span *ngIf="node.type === 'object' || node.type === 'array'"
+            class="toggle-icon"
+            (click)="toggleExpand(node)">
+        <i class="fas" [ngClass]="node.expanded ? 'fa-caret-down' : 'fa-caret-right'"></i>
+      </span>
+
+      <!-- Only show keys for nested objects or when explicitly enabled -->
+      <ng-container *ngIf="shouldShowKey(node)">
+        <span class="json-key">{{ node.key }}</span>
+        <span class="json-separator">:</span>
+      </ng-container>
+
+      <span *ngIf="node.type !== 'object' && node.type !== 'array'"
+            [ngClass]="getNodeClass(node)"
+            class="json-value">
+        {{ getValuePreview(node.value, node.type) }}
+      </span>
+
+      <span *ngIf="node.type === 'object'" class="json-value json-object">
+        <span *ngIf="!node.expanded">
+          {{ '{' }} <span class="json-preview">{{ getObjectLength(node) }} {{ getObjectLength(node) === 1 ? 'property' : 'properties' }}</span> {{ '}' }}
+        </span>
+        <span *ngIf="node.expanded" class="opening-brace">
+          {{ '{' }}
+        </span>
+      </span>
+
+      <span *ngIf="node.type === 'array'" class="json-value json-array">
+        <span *ngIf="!node.expanded">
+          {{ '[' }} <span class="json-preview">{{ getObjectLength(node) }} {{ getObjectLength(node) === 1 ? 'item' : 'items' }}</span> {{ ']' }}
+        </span>
+        <span *ngIf="node.expanded" class="opening-brace">
+          {{ '[' }}
+        </span>
+      </span>
+    </div>
+
+    <div *ngIf="node.expanded && node.children" class="json-children">
+      <app-json-viewer
+        [json]="node.value"
+        [expanded]="expanded"
+        [depth]="depth + 1"
+        [showKeys]="showKeys"
+        [isRoot]="false">
+      </app-json-viewer>
+    </div>
+
+    <div *ngIf="node.expanded && (node.type === 'object' || node.type === 'array')" class="json-node-content json-node-closing">
+      <span class="json-value closing-brace">{{ node.type === 'object' ? '\}' : '\]' }}</span>
+    </div>
+  </div>
+</div>
